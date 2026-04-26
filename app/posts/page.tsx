@@ -1,84 +1,78 @@
 import { connection } from "../lib/mysql";
 import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import BreakingNews from "../components/Breaking";
+import FeaturedPosts from "../components/Featured"; // Kita gunakan komponen yang sudah di-redesign
 
 export default async function HomePage() {
-  // Ambil data dari MySQL
-  const [rows]: any = await connection.query('SELECT * FROM posts ORDER BY id DESC');
+  // 1. Ambil data dari MySQL
+  let rawPosts: any[] = [];
+  try {
+    const [rows]: any = await connection.query('SELECT * FROM posts ORDER BY id DESC');
+    rawPosts = rows;
+  } catch (error) {
+    console.error("Database Connection Error:", error);
+  }
   
-  // Karena category di DB biasanya disimpan sebagai string/JSON, kita parse di sini
-  const posts = rows.map((post: any) => {
-    let parsedCategory = { nasional: "Umum", lokal: "Konten" }; // Default value
+  // 2. Logic Clean Category (Mencegah Error Parse)
+  const posts = rawPosts.map((post: any) => {
+    let displayCategory = "ASN"; // Default
     try {
-      parsedCategory = typeof post.category === 'string' 
-        ? JSON.parse(post.category) 
-        : post.category;
+      if (typeof post.category === 'string') {
+        // Jika formatnya JSON {"nasional":"...", "lokal":"..."}
+        if (post.category.startsWith('{')) {
+          const parsed = JSON.parse(post.category);
+          displayCategory = parsed.nasional || parsed.lokal || "ASN";
+        } else {
+          // Jika formatnya string biasa (enum)
+          displayCategory = post.category;
+        }
+      }
     } catch (e) {
-      console.error("Gagal parse category untuk ID:", post.id);
+      displayCategory = "ASN";
     }
-    return { ...post, category: parsedCategory };
+    return { ...post, category: displayCategory };
   });
 
   return (
-    <>
-    <Navbar />
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-12 text-center">
-          <h1 className="text-4xl font-extrabold text-slate-900 sm:text-5xl tracking-tight">
-            My Blog Connect
-          </h1>
-          <p className="mt-3 text-xl text-slate-500">
-            Testing Connection: Next.js + Remote MySQL Shared Hosting
-          </p>
-        </header>
+    <main className="bg-white min-h-screen">
+      {/* Header & Navigation */}
+      <Navbar />
 
-        {/* Grid System */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post: any) => (
-            <div 
-              key={post.id} 
-              className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200 flex flex-col"
-            >
-              <div className="p-6 flex-1">
-                {/* Badge Category (Nasional & Lokal) */}
-                <div className="flex gap-2 mb-4">
-                  <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider text-blue-600 uppercase bg-blue-50 rounded-lg border border-blue-100">
-                    {post.category?.nasional || 'Nasional'}
-                  </span>
-                  <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider text-emerald-600 uppercase bg-emerald-50 rounded-lg border border-emerald-100">
-                    {post.category?.lokal || 'Lokal'}
-                  </span>
-                </div>
-                
-                <h2 className="text-2xl font-bold text-gray-900 mb-3 leading-tight hover:text-blue-600 transition-colors cursor-pointer">
-                  {post.title}
-                </h2>
-                
-                <p className="text-gray-600 line-clamp-3 mb-4 leading-relaxed">
-                  {post.content}
-                </p>
-              </div>
-
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                <span className="text-xs text-gray-400 font-mono bg-white px-2 py-1 rounded border border-gray-200">
-                  ID: {post.id}
-                </span>
-                <button className="group text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center gap-1 transition-all">
-                  Read More 
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </button>
-              </div>
+      {/* Hero Section */}
+      <Hero />
+      
+ <BreakingNews />
+      {/* Section 3: Featured Posts (The Main Content) */}
+      <div className="bg-white relative">
+        {/* Dekorasi Background Halus agar tidak monoton */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50/30 blur-[120px] -z-10" />
+        
+        {posts.length > 0 ? (
+          <FeaturedPosts posts={posts} />
+        ) : (
+          <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+            <div className="py-20 border-2 border-dashed border-slate-100 rounded-[3rem]">
+              <p className="text-slate-400 italic">Belum ada konten tersedia di SourceASN.</p>
             </div>
-          ))}
-        </div>
-
-        {posts.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200">
-            <p className="text-gray-400 italic text-lg font-medium">Database kosong atau koneksi bermasalah.</p>
           </div>
         )}
       </div>
-    </div>
-    </>
+
+      {/* Footer Elegan */}
+      <footer className="border-t border-slate-100 pt-20 pb-10 bg-white">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="flex justify-center items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-[10px]">S</span>
+            </div>
+            <span className="text-xl font-bold tracking-tighter text-slate-900">Source<span className="text-blue-600">ASN</span></span>
+          </div>
+          <p className="text-[10px] text-slate-400 font-bold tracking-[0.3em] uppercase">
+            © 2026 Portal Informasi Karir Sektor Publik Indonesia
+          </p>
+        </div>
+      </footer>
+    </main>
   );
 }

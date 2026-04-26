@@ -60,6 +60,9 @@ export default function Home() {
           </a>
         </div>
       </main>
+      <a href="/posts">
+        lihat halaman artikel
+      </a>
     </div>
   );
 }

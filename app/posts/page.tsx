@@ -1,4 +1,5 @@
 import { connection } from "../lib/mysql";
+import Navbar from "../components/Navbar";
 
 export default async function HomePage() {
   // Ambil data dari MySQL
@@ -18,6 +19,8 @@ export default async function HomePage() {
   });
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-12 text-center">
@@ -76,5 +79,6 @@ export default async function HomePage() {
         )}
       </div>
     </div>
+    </>
   );
 }

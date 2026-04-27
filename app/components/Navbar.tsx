@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Menu, X, User, ArrowRight, Home, Briefcase, GraduationCap } from 'lucide-react';
+import Link from 'next/link';
 
 interface Post {
   id: number;
@@ -57,7 +58,7 @@ const Navbar = ({ allPosts = [] }: { allPosts?: Post[] }) => {
             
             {/* LOGO AREA */}
             <div className={`flex-shrink-0 transition-all duration-500 ${isSearchActive ? 'hidden md:flex' : 'flex'}`}>
-              <a href="/" className="flex items-center space-x-3 group">
+              <Link href="/" className="flex items-center space-x-3 group">
                 <div className="w-10 h-10 overflow-hidden rounded-xl shadow-lg border border-slate-100">
                   <img src="https://png.pngtree.com/png-vector/20221124/ourlarge/pngtree-korpri-logo-in-gold-and-blue-colors-badge-png-image_6479348.png" alt="Logo" className="w-full h-full object-cover" />
                 </div>
@@ -65,7 +66,7 @@ const Navbar = ({ allPosts = [] }: { allPosts?: Post[] }) => {
                   <span className="text-lg font-black text-slate-900 leading-none tracking-tighter">Source<span className="text-blue-600">ASN</span></span>
                   <span className="text-[9px] text-slate-400 font-bold uppercase">Portal Terpercaya</span>
                 </div>
-              </a>
+              </Link>
             </div>
 
             {/* SEARCH ENGINE (Tengah) */}
@@ -136,12 +137,14 @@ const Navbar = ({ allPosts = [] }: { allPosts?: Post[] }) => {
             {/* NAVIGASI KANAN (Desktop) */}
             <div className="hidden md:flex items-center space-x-6">
               {navLinks.map((link) => (
-                <a key={link.name} href={link.href} className="text-[11px] font-black text-slate-500 hover:text-blue-600 tracking-widest uppercase transition-colors">
+                <Link key={link.name} href={link.href} className="text-[11px] font-black text-slate-500 hover:text-blue-600 tracking-widest uppercase transition-colors">
                   {link.name}
-                </a>
+                </Link>
               ))}
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-7 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 transition-all active:scale-95">
-                Login
+                <Link href="/login">
+                  Login
+                </Link>
               </button>
             </div>
 
@@ -162,7 +165,7 @@ const Navbar = ({ allPosts = [] }: { allPosts?: Post[] }) => {
         }`}>
           <div className="flex flex-col h-full p-6">
             <div className="flex justify-between items-center mb-10">
-              <img src="https://png.pngtree.com/png-vector/20221124/ourlarge/pngtree-korpri-logo-in-gold-and-blue-colors-badge-png-image_6479348.png" alt="Logo" className="w-10 h-10 rounded-lg" />
+              {/* <img src="https://png.pngtree.com/png-vector/20221124/ourlarge/pngtree-korpri-logo-in-gold-and-blue-colors-badge-png-image_6479348.png" alt="Logo" className="w-10 h-10 rounded-lg" /> */}
               <button onClick={closeAll} className="p-2 bg-slate-100 rounded-full">
                 <X className="w-6 h-6 text-slate-500" />
               </button>
@@ -170,7 +173,7 @@ const Navbar = ({ allPosts = [] }: { allPosts?: Post[] }) => {
             
             <div className="space-y-3 flex-1">
               {navLinks.map((link) => (
-                <a 
+                <Link 
                   key={link.name} 
                   href={link.href} 
                   onClick={closeAll}
@@ -180,13 +183,15 @@ const Navbar = ({ allPosts = [] }: { allPosts?: Post[] }) => {
                     {link.icon}
                   </div>
                   <span className="text-base text-slate-700 group-hover:text-blue-600">{link.name}</span>
-                </a>
+                </Link>
               ))}
             </div>
 
             <div className="pt-6 border-t border-slate-100 space-y-4">
               <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-blue-200">
-                Login Dashboard
+                <Link href="/login">
+                  Login Dashboard
+                </Link>
               </button>
             </div>
           </div>

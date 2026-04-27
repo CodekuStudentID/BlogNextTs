@@ -10,7 +10,7 @@ const Hero = () => {
       {/* 1. BACKGROUND IMAGE DENGAN OVERLAY GELAP */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2000" 
+          src="https://www.menpan.go.id/site/images/berita_foto_backup/2025/Desember/20250112_-_DEP_BALAKS_-_Upacara_Peringatan_HUT_ke-54_Korpri_di_Kementerian_PANRB_1.jpeg" 
           alt="Office Background" 
           className="w-full h-full object-cover opacity-30"
         />

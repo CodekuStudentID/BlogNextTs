@@ -2,7 +2,10 @@ import { connection } from "../lib/mysql";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import BreakingNews from "../components/Breaking";
+import PostCard from "../components/Card";
 import FeaturedPosts from "../components/Featured"; // Kita gunakan komponen yang sudah di-redesign
+
+import { ArrowRight } from "lucide-react";
 
 export default async function HomePage() {
   // 1. Ambil data dari MySQL
@@ -13,7 +16,7 @@ export default async function HomePage() {
   } catch (error) {
     console.error("Database Connection Error:", error);
   }
-  
+
   // 2. Logic Clean Category (Mencegah Error Parse)
   const posts = rawPosts.map((post: any) => {
     let displayCategory = "ASN"; // Default
@@ -41,23 +44,48 @@ export default async function HomePage() {
 
       {/* Hero Section */}
       <Hero />
-      
- <BreakingNews />
-      {/* Section 3: Featured Posts (The Main Content) */}
-      <div className="bg-white relative">
-        {/* Dekorasi Background Halus agar tidak monoton */}
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50/30 blur-[120px] -z-10" />
-        
-        {posts.length > 0 ? (
-          <FeaturedPosts posts={posts} />
-        ) : (
-          <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-            <div className="py-20 border-2 border-dashed border-slate-100 rounded-[3rem]">
-              <p className="text-slate-400 italic">Belum ada konten tersedia di SourceASN.</p>
+
+      <BreakingNews />
+
+      {/* SECTION ARTIKEL TERBARU */}
+      <section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-[2px] bg-blue-600"></div>
+              <span className="text-xs font-black text-blue-600 uppercase tracking-[0.2em]">Kabar ASN</span>
             </div>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+              Informasi <span className="text-blue-600">Terbaru</span>
+            </h2>
           </div>
-        )}
-      </div>
+          <a href="/posts" className="text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-2">
+            Lihat Semua Artikel <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+
+        {/* GRID ARTIKEL */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.length > 0 ? (
+            posts.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            // Data Dummy jika database belum ada isinya
+            [1, 2, 3].map((i) => (
+              <PostCard
+                key={i}
+                post={{
+                  id: i,
+                  title: i === 1 ? "Panduan Lengkap Pendaftaran CPNS 2026: Syarat & Dokumen" : "Loker BUMN PT Pertamina Batch 2 Dibuka: Cek Formasinya",
+                  slug: "dummy-post",
+                  content: "Berikut adalah rincian mengenai jadwal seleksi dan berkas yang harus disiapkan agar lolos tahap administrasi...",
+                  category: i === 2 ? "BUMN" : "ASN",
+                  created_at: "2026-04-27",
+                }}
+              />
+            ))
+          )}
+        </div>
+      </section>
 
       {/* Footer Elegan */}
       <footer className="border-t border-slate-100 pt-20 pb-10 bg-white">

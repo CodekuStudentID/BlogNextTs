@@ -2,16 +2,35 @@
 
 import React, { useState } from 'react';
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
+import { auth } from '../auth/login'; // Pastikan file ini mengekspor fungsi auth
 
 export default function AdminLogin() {
+  // 1. Definisi State
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Logic integrasi backend kamu di sini
-    setTimeout(() => setIsLoading(false), 2000); 
+    setError("");
+
+    try {
+      // 2. Memanggil fungsi auth
+      const response = await auth({ email, password });
+      
+      if (response.success) {
+        window.location.href = "/admin/dashboard"; 
+      } else {
+        setError(response.message);
+      }
+    } catch (err) {
+      setError("Terjadi kesalahan sistem koneksi.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -39,6 +58,14 @@ export default function AdminLogin() {
 
         {/* Login Card */}
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
+          
+          {/* Tampilkan Error Message jika ada */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-bold text-center animate-pulse">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-6">
             
             {/* Input Email */}
@@ -48,6 +75,8 @@ export default function AdminLogin() {
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
                 <input 
                   type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@sourceasn.id"
                   className="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                   required
@@ -59,12 +88,14 @@ export default function AdminLogin() {
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Password</label>
-                <a href="#" className="text-[10px] font-bold text-blue-500 hover:underline uppercase tracking-widest">Lupa?</a>
+                <button type="button" className="text-[10px] font-bold text-blue-500 hover:underline uppercase tracking-widest">Lupa?</button>
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
                 <input 
                   type={showPassword ? "text" : "password"} 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                   required
@@ -72,7 +103,7 @@ export default function AdminLogin() {
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors px-2"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -82,7 +113,7 @@ export default function AdminLogin() {
             {/* Submit Button */}
             <button 
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-3 active:scale-[0.98]"
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-3 active:scale-[0.98]"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -99,7 +130,7 @@ export default function AdminLogin() {
           <div className="mt-8 pt-8 border-t border-white/5 text-center">
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
               Sistem Keamanan Berlapis Aktif. <br />
-              IP Anda Terdeteksi: <span className="text-slate-400">192.168.x.x</span>
+              IP Anda Terdeteksi: <span className="text-slate-400">Terproteksi</span>
             </p>
           </div>
         </div>
